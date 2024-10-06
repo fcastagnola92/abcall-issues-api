@@ -1,0 +1,48 @@
+services:
+  api-issue:
+    build:
+      context: .
+      dockerfile: dev.Dockerfile
+    container_name: abcall-issue-local-api
+    restart: always
+    volumes:
+      - ".:/app"
+    ports:
+      - "5007:3007"
+    env_file:
+      - .env.local
+    tty: true
+    links:
+      - db
+    depends_on:
+      - db
+    networks:
+      - issue_net
+      - app_net
+
+      
+  db:
+    build:
+      context: .
+      dockerfile: db.Dockerfile
+    env_file:
+      - .env.db
+    container_name: issue-local-db
+    volumes:
+      - "./data/postgresql:/var/lib/postgresql"
+      - "./docker/postgresql:/docker-entrypoint-initdb.d"
+    ports:
+      - "5436:5436"
+    networks:
+      - issue_net
+
+
+
+
+networks:
+  issue_net:
+    name: issue_net
+    driver: bridge
+  app_net:
+    name: app_net
+    driver: bridge

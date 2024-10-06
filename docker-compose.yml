@@ -1,0 +1,15 @@
+version: "3.9"
+services:
+  api-issue:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: abcall-issue-api
+    restart: always
+    volumes:
+      - ".:/app"
+    ports:
+      - "3007:3007"
+    env_file:
+      - .env
+    tty: true
