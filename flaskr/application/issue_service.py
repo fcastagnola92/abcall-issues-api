@@ -13,4 +13,11 @@ class IssueService:
         self.log = Logger()
         self.issue_repository=issue_repository
 
+    def list_issues_period(self, customer_id, year, month):
+        user_id=1
+        #query users from customer id
+        issues=[]
+        issues.append(self.issue_repository.list_issues_period(user_id,year,month))
+        return issues
+
     
