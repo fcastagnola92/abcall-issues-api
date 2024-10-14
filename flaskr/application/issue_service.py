@@ -2,7 +2,6 @@ from typing import List
 from ..domain.models import Issue
 import requests
 from ..domain.interfaces.issue_repository import IssueRepository
-from ..infrastructure.mappers import IssueMapper
 import uuid
 from datetime import datetime
 from ..utils import Logger
