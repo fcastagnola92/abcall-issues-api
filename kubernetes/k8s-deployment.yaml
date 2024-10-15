@@ -4,42 +4,42 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: abcall-issue-api
+  name: abcall-issues-api
   labels:
-    app: abcall-issue-api
+    app: abcall-issues-api
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: abcall-issue-api
+      app: abcall-issues-api
   template:
     metadata:
       labels:
-        app: abcall-issue-api
+        app: abcall-issues-api
     spec:
       containers:
-        - name: abcall-issue-api
-          image: abcall.azurecr.io/abcall-issue-api:1.0.0
+        - name: abcall-issues-api
+          image: abcall.azurecr.io/abcall-issues-api:1.0.0
           env:
             - name: "FLASK_APP"
               valueFrom:
                 configMapKeyRef:
-                  name: issue-configmap
+                  name: issues-configmap
                   key: FLASK_APP
             - name: "FLASK_ENV"
               valueFrom:
                 configMapKeyRef:
-                  name: issue-configmap
+                  name: issues-configmap
                   key: FLASK_ENV
             - name: "APP_NAME"
               valueFrom:
                 configMapKeyRef:
-                  name: issue-configmap
+                  name: issues-configmap
                   key: APP_NAME
             - name: "DATABASE_URI"
               valueFrom:
                 secretKeyRef:
-                  name: issue-secrets
+                  name: issues-secrets
                   key: DATABASE_URI
           ports:
             - containerPort: 3007
@@ -49,11 +49,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: abcall-issue-api-service
+  name: abcall-issues-api-service
 spec:
   type: LoadBalancer
   selector:
-    app: abcall-issue-api
+    app: abcall-issues-api
   ports:
     - protocol: TCP
       port: 3007
