@@ -6,7 +6,7 @@ on:
 jobs:
   tests:
     name: Tests
-    if: success() && github.event.pull_request.merged == true && github.head_ref == 'main'
+    if: success() && github.event.pull_request.merged == true && github.head_ref == 'develop'
     runs-on: ubuntu-latest
     steps:
     - name: Checkout de repositorio
