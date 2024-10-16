@@ -50,7 +50,7 @@ docker-dev-down:
 	docker compose -f=docker-compose.develop.yml down
 
 create-database:
-	docker exec payment-local-db psql -U develop -d payment-db -f /docker-entrypoint-initdb.d/init.sql
+	docker exec issue-local-db psql -U develop -d issue-db -f /docker-entrypoint-initdb.d/init.sql
 
 
 kubernetes-up:
