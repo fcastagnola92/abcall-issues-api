@@ -66,7 +66,7 @@ jobs:
       
       - name: Set AKS credentials
         run: |
-          az aks get-credentials --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --name my-aks-cluster
+          az aks get-credentials --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --name abcall-cluster-east-us
 
       - name: Deploy to AKS 🚀
         run: |
