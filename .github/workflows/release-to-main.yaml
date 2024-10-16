@@ -70,4 +70,4 @@ jobs:
 
       - name: Deploy to AKS 🚀
         run: |
-          kubectl set image kubernetes/k8s-deployment.yaml abcall-issues-api=${{ secrets.ACR_LOGIN_SERVER }}/abcall-issues-api:build-$GITHUB_RUN_NUMBER
+          kubectl set image ./kubernetes/k8s-deployment.yaml abcall-issues-api=${{ secrets.ACR_LOGIN_SERVER }}/abcall-issues-api:build-$GITHUB_RUN_NUMBER
