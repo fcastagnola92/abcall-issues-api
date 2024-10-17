@@ -17,10 +17,26 @@ class IssuePostgresqlRepository(IssueRepository):
 
     def list_issues_period (self,user_id,year, month) -> List[Issue]:
         session = self.Session()
+        try:
+            issues=session.query(IssueModelSqlAlchemy).filter(
+                extract('year', IssueModelSqlAlchemy.created_at) == year,
+                extract('month', IssueModelSqlAlchemy.created_at) == month,
+                IssueModelSqlAlchemy.auth_user_id==user_id).all()
+            
+            return [self._from_model(issue_model) for issue_model in issues]
+        finally:
+            session.close()
 
-        issues=session.query(IssueModelSqlAlchemy).filter(
-            extract('year', IssueModelSqlAlchemy.created_at) == year,
-            extract('month', IssueModelSqlAlchemy.created_at) == month,
-            IssueModelSqlAlchemy.auth_user_id==user_id)
-          
-        return issues
+
+    def _from_model(self, model: IssueModelSqlAlchemy) -> Issue:
+        return Issue(
+            id=model.id,
+            auth_user_id=model.auth_user_id,
+            auth_user_agent_id=model.auth_user_agent_id,
+            status=model.status,
+            subject=model.subject,
+            description=model.description,
+            created_at=model.created_at,
+            closed_at=model.closed_at,
+            channel_plan_id=model.channel_plan_id
+        )

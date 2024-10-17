@@ -3,7 +3,7 @@ from flask import jsonify, request
 import logging
 import requests
 from ...application.issue_service import IssueService
-from ...infrastructure.databases.issue_postresql_repository import IssueRepository
+from ...infrastructure.databases.issue_postresql_repository import IssuePostgresqlRepository
 from http import HTTPStatus
 from ...utils import Logger
 
@@ -15,7 +15,7 @@ class Issue(Resource):
 
     def __init__(self):
         config = Config()
-        self.issue_repository = IssueRepository(config.DATABASE_URI)
+        self.issue_repository = IssuePostgresqlRepository(config.DATABASE_URI)
         self.service = IssueService(self.issue_repository)
 
 
@@ -36,7 +36,10 @@ class Issue(Resource):
             year = request.args.get('year')
             month = request.args.get('month')
             issue_list = self.service.list_issues_period(customer_id=customer_id,year=year,month=month)
-            list_issues = [issue.to_dict() for issue in issue_list]
+            list_issues=[]
+            if issue_list:
+                list_issues = [issue.to_dict() for issue in issue_list]
+
             
             return list_issues, HTTPStatus.OK
         except Exception as ex:
