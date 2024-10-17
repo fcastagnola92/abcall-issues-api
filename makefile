@@ -25,6 +25,15 @@ else
 	flask run -p $(PORT) -h 0.0.0.0
 endif
 
+run-tests:
+	 FLASK_ENV=test python -m unittest discover -s tests -p '*Test.py' -v
+
+run-tests-coverage:
+	 coverage run -m unittest discover
+	 coverage report -m
+	 coverage html
+	 coverage report --fail-under=50
+
 docker-gunicorn:
 	  gunicorn -w 4 --bind 127.0.0.1:$(PORT) wsgi:app
 

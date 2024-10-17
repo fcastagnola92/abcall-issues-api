@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: abcall-issues-api
-          image: abcall.azurecr.io/abcall-issues-api:1.0.0
+          image: abcall.azurecr.io/abcall-issues-api:{{IMAGE_TAG}}
           env:
             - name: "FLASK_APP"
               valueFrom:
