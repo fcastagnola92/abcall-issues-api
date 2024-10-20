@@ -6,6 +6,7 @@ from ...domain.models import Issue
 from ...domain.interfaces import IssueRepository
 from ...infrastructure.databases.model_sqlalchemy import Base, IssueModelSqlAlchemy
 log = Logger()
+from ...domain.constants import ISSUE_STATUS_SOLVED
 
 class IssuePostgresqlRepository(IssueRepository):
     def __init__(self, connection_string: str):
@@ -22,6 +23,7 @@ class IssuePostgresqlRepository(IssueRepository):
             issues=session.query(IssueModelSqlAlchemy).filter(
                 extract('year', IssueModelSqlAlchemy.created_at) == year,
                 extract('month', IssueModelSqlAlchemy.created_at) == month,
+                IssueModelSqlAlchemy.status == ISSUE_STATUS_SOLVED,
                 IssueModelSqlAlchemy.auth_user_id==user_id).all()
             
             return [self._from_model(issue_model) for issue_model in issues]
