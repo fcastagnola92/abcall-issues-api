@@ -65,5 +65,4 @@ class AuthService:
             
         except Exception as e:
             self.logger.info(f"Error comunication with auth api: {str(e)}")
-            return None
-        
+            return None    
