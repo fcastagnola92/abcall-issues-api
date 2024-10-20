@@ -8,3 +8,6 @@ class IssueRepository:
     
     def list_issues_period (self,user_id,year, month) -> List[Issue]:
         raise NotImplementedError
+    
+    def create_issue(self, issue_data: dict) -> Issue:
+        raise NotImplementedError

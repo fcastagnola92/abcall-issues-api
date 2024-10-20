@@ -1,10 +1,11 @@
 from sqlalchemy import create_engine,extract, func
 from sqlalchemy.orm import sessionmaker
 from typing import List, Optional
-from uuid import UUID
+from ...utils import Logger
 from ...domain.models import Issue
 from ...domain.interfaces import IssueRepository
 from ...infrastructure.databases.model_sqlalchemy import Base, IssueModelSqlAlchemy
+log = Logger()
 from ...domain.constants import ISSUE_STATUS_SOLVED
 
 class IssuePostgresqlRepository(IssueRepository):
@@ -29,9 +30,21 @@ class IssuePostgresqlRepository(IssueRepository):
         finally:
             session.close()
 
+    def create_issue(self, issue:Issue):
+        try:
+            session = self.Session()
+            session.add(self._from_model(issue))
+            session.commit()
+        except Exception as e:
+            session.rollback()
+            raise e
+        finally:
+            session.close()
 
-    def _from_model(self, model: IssueModelSqlAlchemy) -> Issue:
-        return Issue(
+
+
+    def _from_model(self, model: Issue) -> IssueModelSqlAlchemy:
+        return IssueModelSqlAlchemy(
             id=model.id,
             auth_user_id=model.auth_user_id,
             auth_user_agent_id=model.auth_user_agent_id,
