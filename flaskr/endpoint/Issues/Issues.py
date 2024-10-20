@@ -44,6 +44,8 @@ class Issue(Resource):
     def get(self, action=None):
         if action == 'getIssuesByCustomer':
             return self.getIssuesByCustomer()
+        if action == 'getIAResponse':
+            return self.getIAResponse()
         else:
             return {"message": "Action not found"}, 404
     
@@ -64,4 +66,18 @@ class Issue(Resource):
         except Exception as ex:
             log.error(f'Some error occurred trying to get issue list: {ex}')
             return {'message': 'Something was wrong trying to get issue list'}, HTTPStatus.INTERNAL_SERVER_ERROR
+        
+    def getIAResponse(self):
+        try:
+
+            log.info(f'Receive request to ask to open ai')
+            question = request.args.get('question')
+            answer=self.service.ask_generative_ai(question)
+            return {
+                'answer': answer
+            }, HTTPStatus.OK
+            
+        except Exception as ex:
+            log.error(f'Some error occurred trying ask open ai: {ex}')
+            return {'message': 'Something was wrong trying ask open ai'}, HTTPStatus.INTERNAL_SERVER_ERROR
         
