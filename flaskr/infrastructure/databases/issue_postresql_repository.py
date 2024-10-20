@@ -29,6 +29,27 @@ class IssuePostgresqlRepository(IssueRepository):
         finally:
             session.close()
 
+    def list_issues_filtered(self, status=None, channel_plan_id=None, created_at=None, closed_at=None) -> List[Issue]:
+        session = self.Session()
+        try:
+            query = session.query(IssueModelSqlAlchemy)
+            
+            # Agregar filtros opcionales
+            if status:
+                query = query.filter(IssueModelSqlAlchemy.status == status)
+            if channel_plan_id:
+                query = query.filter(IssueModelSqlAlchemy.channel_plan_id == channel_plan_id)
+            if created_at:
+                query = query.filter(IssueModelSqlAlchemy.created_at >= created_at)
+            if closed_at:
+                query = query.filter(IssueModelSqlAlchemy.closed_at <= closed_at)
+            
+            issues = query.all()
+            
+            return [self._from_model(issue_model) for issue_model in issues]
+        finally:
+            session.close()
+
 
     def _from_model(self, model: IssueModelSqlAlchemy) -> Issue:
         return Issue(

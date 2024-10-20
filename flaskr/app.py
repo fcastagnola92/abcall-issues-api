@@ -10,7 +10,6 @@ import logging
 
 config = Config()
 
-
 app = create_app('default')
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger('default')
@@ -23,8 +22,6 @@ signal.signal(signal.SIGTERM, before_server_stop)
 
 app_context = app.app_context()
 app_context.push()
-
-
 
 api = Api(app)
 
