@@ -101,7 +101,9 @@ class Issue(Resource):
 
             list_issues = []
             if issue_list:
-                list_issues = [issue.to_dict() for issue in issue_list]
+                list_issues = [
+                    issue.to_dict() if hasattr(issue, 'to_dict') else issue for issue in issue_list
+                ]
 
             return list_issues, HTTPStatus.OK
 

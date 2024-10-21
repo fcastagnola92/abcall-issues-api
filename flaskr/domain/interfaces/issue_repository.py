@@ -9,7 +9,7 @@ class IssueRepository:
     def list_issues_period (self,user_id,year, month) -> List[Issue]:
         raise NotImplementedError
     
-    def list_issues_filtered (self, customer_id, status, channel_plan_id, created_at, closed_at) -> List[Issue]:
+    def list_issues_filtered (self, user_id, status, channel_plan_id, created_at, closed_at) -> List[Issue]:
         raise NotImplementedError
     
     def create_issue(self, issue_data: dict) -> Issue:
