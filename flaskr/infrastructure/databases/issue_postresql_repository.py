@@ -68,7 +68,7 @@ class IssuePostgresqlRepository(IssueRepository):
     def create_issue(self, issue:Issue):
         try:
             session = self.Session()
-            session.add(self._from_model(issue))
+            session.add(self._to_model(issue))
             session.commit()
         except Exception as e:
             session.rollback()
@@ -88,3 +88,19 @@ class IssuePostgresqlRepository(IssueRepository):
             closed_at=model.closed_at,
             channel_plan_id=model.channel_plan_id
         )
+        
+    def _to_model(self,issue:Issue)->IssueModelSqlAlchemy:
+        return IssueModelSqlAlchemy(
+            id=issue.id,
+            auth_user_id=issue.auth_user_id,
+            auth_user_agent_id=issue.auth_user_agent_id,
+            status=issue.status,
+            subject=issue.subject,
+            description=issue.description,
+            created_at=issue.created_at,
+            closed_at=issue.closed_at,
+            channel_plan_id=issue.channel_plan_id
+        )
+
+
+    
