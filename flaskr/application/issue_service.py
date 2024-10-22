@@ -9,6 +9,7 @@ from ..domain.models import Issue, IssueAttachment
 from ..utils import Logger
 from  config import Config
 from .auth_service import AuthService
+from .openAiService import OpenAIService
 from ..utils import Logger
 log = Logger()
 class Status(TypedDict):
@@ -18,7 +19,7 @@ class Status(TypedDict):
 class IssueStatus:
     NEW = {"id": UUID("00000000-0000-0000-0000-000000000001"), "name": "New"}
     IN_PROGRESS = {"id": UUID("00000000-0000-0000-0000-000000000002"), "name": "In Progress"}
-    RESOLVED = {"id": UUID("00000000-0000-0000-0000-000000000003"), "name": "Resolved"}
+    RESOLVED = {"id": UUID("791353c6-3899-4d35-bcd9-af8775e240bf"), "name": "Resolved"}
     CLOSED = {"id": UUID("00000000-0000-0000-0000-000000000004"), "name": "Closed"}
 
     ALL_STATUSES = [NEW, IN_PROGRESS, RESOLVED, CLOSED]
@@ -82,9 +83,16 @@ class IssueService:
                 issue_id=new_issue.id,
                 file_path=file_path,
             )
-        log.info(f"new_attachment: {new_attachment}")
-            # Persistir el archivo adjunto en el repositorio
         self.issue_repository.create_issue(new_issue, new_attachment)
-
-
         return new_issue
+    
+    def ask_generative_ai(self,question):
+        """
+        method to ask question to chat gpt
+        Args:
+            question (str): question to ask
+        Return:
+            answer (str): answer about ask
+        """
+        ia_service=OpenAIService()
+        return ia_service.ask_chatgpt(question)
