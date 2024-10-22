@@ -1,6 +1,7 @@
 from typing import List, Optional
 from uuid import UUID
 from ..models.issue import Issue
+from ..models.issue_attachment import IssueAttachment
 
 class IssueRepository:
     def list(self) -> List[Issue]:
@@ -12,5 +13,8 @@ class IssueRepository:
     def list_issues_filtered (self, user_id, status, channel_plan_id, created_at, closed_at) -> List[Issue]:
         raise NotImplementedError
     
-    def create_issue(self, issue_data: dict) -> Issue:
+    def create_issue(self, issue_data: dict, new_attachment:dict) -> Issue:
+        raise NotImplementedError
+    
+    def create_issue_attachment(self, issue_attachment: dict)-> IssueAttachment:
         raise NotImplementedError
