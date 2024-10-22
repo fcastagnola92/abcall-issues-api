@@ -44,11 +44,13 @@ class Issue(Resource):
     def get(self, action=None):
         if action == 'getIssuesByCustomer':
             return self.getIssuesByCustomer()
+        elif action == 'getIssuesDasboard':
+            return self.getIssuesDasboard()
         if action == 'getIAResponse':
             return self.getIAResponse()
         else:
             return {"message": "Action not found"}, 404
-    
+        
     def getIssuesByCustomer(self):
         try:
 
@@ -65,7 +67,52 @@ class Issue(Resource):
             return list_issues, HTTPStatus.OK
         except Exception as ex:
             log.error(f'Some error occurred trying to get issue list: {ex}')
-            return {'message': 'Something was wrong trying to get issue list'}, HTTPStatus.INTERNAL_SERVER_ERROR
+            return {'message': 'Something was wrong trying to get issue list'}, HTTPStatus.INTERNAL_SERVER_ERROR    
+    
+    def listIssuesFiltered(self, status=None, channel_plan_id=None, created_at=None, closed_at=None):
+        query = self.session.query(Issue)
+
+        if status:
+            query = query.filter(Issue.status == status)
+        if channel_plan_id:
+            query = query.filter(Issue.channel_plan_id == channel_plan_id)
+        if created_at:
+            query = query.filter(Issue.created_at >= created_at)
+        if closed_at:
+            query = query.filter(Issue.closed_at <= closed_at)
+
+        return query.all()
+
+    def getIssuesDasboard(self):
+        try:
+            log.info(f'Receive request to get issues')
+            
+            customer_id = request.args.get('customer_id')
+            status = request.args.get('status')
+            channel_plan_id = request.args.get('channel_plan_id')
+            created_at = request.args.get('created_at')
+            closed_at = request.args.get('closed_at')
+
+            issue_list = self.service.list_issues_filtered(
+                customer_id=customer_id,
+                status=status,
+                channel_plan_id=channel_plan_id,
+                created_at=created_at,
+                closed_at=closed_at
+            )
+
+            list_issues = []
+            if issue_list:
+                list_issues = [
+                    issue.to_dict() if hasattr(issue, 'to_dict') else issue for issue in issue_list
+                ]
+
+            return list_issues, HTTPStatus.OK
+
+        except Exception as ex:
+            log.error(f'Error trying to get issue list: {ex}')
+            return {'message': 'Something went wrong trying to get the issue dashboard'}, HTTPStatus.INTERNAL_SERVER_ERROR
+          
         
     def getIAResponse(self):
         try:

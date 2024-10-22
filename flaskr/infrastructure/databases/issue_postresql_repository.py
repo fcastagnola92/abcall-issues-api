@@ -30,6 +30,41 @@ class IssuePostgresqlRepository(IssueRepository):
         finally:
             session.close()
 
+    def list_issues_filtered(self, user_id, status=None, channel_plan_id=None, created_at=None, closed_at=None):
+        session = self.Session()
+        try:            
+            query = session.query(IssueModelSqlAlchemy).filter(IssueModelSqlAlchemy.auth_user_id == user_id)
+        
+            if status:
+                query = query.filter(IssueModelSqlAlchemy.status == status)
+            if channel_plan_id:
+                query = query.filter(IssueModelSqlAlchemy.channel_plan_id == channel_plan_id)
+            if created_at:
+                query = query.filter(IssueModelSqlAlchemy.created_at >= created_at)
+            if closed_at:
+                query = query.filter(IssueModelSqlAlchemy.closed_at <= closed_at)
+
+            issues_sqlalchemy = query.all()
+
+            issues = [
+                Issue(
+                    id=issue_model.id,
+                    auth_user_id=issue_model.auth_user_id,
+                    auth_user_agent_id=issue_model.auth_user_agent_id,
+                    status=issue_model.status,
+                    subject=issue_model.subject,
+                    description=issue_model.description,
+                    created_at=issue_model.created_at,
+                    closed_at=issue_model.closed_at,
+                    channel_plan_id=issue_model.channel_plan_id
+                ).to_dict() for issue_model in issues_sqlalchemy
+            ]
+
+            return issues
+
+        finally:
+            session.close()
+
     def create_issue(self, issue:Issue):
         try:
             session = self.Session()
@@ -41,10 +76,8 @@ class IssuePostgresqlRepository(IssueRepository):
         finally:
             session.close()
 
-
-
-    def _from_model(self, model: IssueModelSqlAlchemy) -> Issue:
-        return Issue(
+    def _from_model(self, model: Issue) -> IssueModelSqlAlchemy:
+        return IssueModelSqlAlchemy(
             id=model.id,
             auth_user_id=model.auth_user_id,
             auth_user_agent_id=model.auth_user_agent_id,
@@ -55,10 +88,7 @@ class IssuePostgresqlRepository(IssueRepository):
             closed_at=model.closed_at,
             channel_plan_id=model.channel_plan_id
         )
-    
-
-
-    
+        
     def _to_model(self,issue:Issue)->IssueModelSqlAlchemy:
         return IssueModelSqlAlchemy(
             id=issue.id,
