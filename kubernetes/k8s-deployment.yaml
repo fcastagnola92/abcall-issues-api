@@ -36,11 +36,26 @@ spec:
                 configMapKeyRef:
                   name: issues-configmap
                   key: APP_NAME
+            - name: "AUTH_API_PATH"
+              valueFrom:
+                configMapKeyRef:
+                  name: issues-configmap
+                  key: AUTH_API_PATH
+            - name: "OPENAI_API_PATH"
+              valueFrom:
+                configMapKeyRef:
+                  name: issues-configmap
+                  key: OPENAI_API_PATH
             - name: "DATABASE_URI"
               valueFrom:
                 secretKeyRef:
                   name: issues-secrets
                   key: DATABASE_URI
+            - name: "TOKEN_OPENAI"
+              valueFrom:
+                secretKeyRef:
+                  name: issues-secrets
+                  key: TOKEN_OPENAI
           ports:
             - containerPort: 3007
           imagePullPolicy: Always

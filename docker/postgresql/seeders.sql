@@ -1,0 +1,1 @@
+INSERT INTO issue_state (ID,NAME) VALUES('791353c6-3899-4d35-bcd9-af8775e240bf','Solved');

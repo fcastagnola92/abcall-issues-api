@@ -12,3 +12,4 @@ class Config:
     ENVIRONMENT = environment
     APP_NAME=os.getenv('APP_NAME')
     DATABASE_URI=os.getenv('DATABASE_URI')
+    AUTH_API_PATH=os.getenv('AUTH_API_PATH')
