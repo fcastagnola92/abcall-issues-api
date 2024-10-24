@@ -1,13 +1,12 @@
 from flask_restful import Resource
 from flask import jsonify, request
-import logging
-import requests
+import os
+from config import Config
+from http import HTTPStatus
 from ...application.issue_service import IssueService
 from ...infrastructure.databases.issue_postresql_repository import IssuePostgresqlRepository
-from http import HTTPStatus
 from ...utils import Logger
 
-from config import Config
 
 log = Logger()
 
@@ -20,22 +19,30 @@ class Issue(Resource):
 
     def post(self,action=None):
         try:
-            log.info(f"Receive request to create a new issue")
 
-            data = request.get_json()
-            auth_user_id = data.get("auth_user_id")
-            auth_user_agent_id = data.get('auth_user_agent_id')
-            subject = data.get("subject")
-            description = data.get("description")
+            auth_user_id = request.form.get("auth_user_id")
+            auth_user_agent_id = request.form.get('auth_user_agent_id')
+            subject = request.form.get("subject")
+            description = request.form.get("description")
+
+            file_path = None  # Initialize file_path in case no file is provided
+            file = request.files.get('file')
+            if file:
+                upload_directory = os.path.join(os.getcwd(), 'uploads')
+                os.makedirs(upload_directory, exist_ok=True)
+                file_path = os.path.join(upload_directory, file.filename)
+                file.save(file_path)
+                log.info(f"File uploaded successfully at {file_path}")
 
             issue_id = self.service.create_issue(
                 auth_user_id=auth_user_id,
                 auth_user_agent_id=auth_user_agent_id,
                 subject=subject,
-                description=description
+                description=description,
+                file_path=file_path
             )
 
-            return {"message": f"Issue created successfully with ID {issue_id}"}, HTTPStatus.CREATED
+            return {"message": f"Issue created successfully with ID"}, HTTPStatus.CREATED
 
         except Exception as ex:
             log.error(f"Error while creating issue: {ex}")
@@ -85,8 +92,6 @@ class Issue(Resource):
 
     def getIssuesDasboard(self):
         try:
-            log.info(f'Receive request to get issues')
-            
             customer_id = request.args.get('customer_id')
             status = request.args.get('status')
             channel_plan_id = request.args.get('channel_plan_id')
