@@ -2,9 +2,9 @@ from sqlalchemy import create_engine,extract, func
 from sqlalchemy.orm import sessionmaker
 from typing import List, Optional
 from ...utils import Logger
-from ...domain.models import Issue
+from ...domain.models import Issue, IssueAttachment
 from ...domain.interfaces import IssueRepository
-from ...infrastructure.databases.model_sqlalchemy import Base, IssueModelSqlAlchemy
+from ...infrastructure.databases.model_sqlalchemy import Base, IssueModelSqlAlchemy, IssueAttachmentSqlAlchemy
 log = Logger()
 from ...domain.constants import ISSUE_STATUS_SOLVED
 
@@ -65,16 +65,25 @@ class IssuePostgresqlRepository(IssueRepository):
         finally:
             session.close()
 
-    def create_issue(self, issue:Issue):
+    def create_issue(self, issue:Issue, attachment: IssueAttachment = None):
         try:
             session = self.Session()
-            session.add(self._to_model(issue))
+            issue_model = self._to_model(issue)
+            session.add(issue_model)
+            session.commit()  
+
+            if attachment:
+                attachment_model = self._to_model_attachment(attachment)
+                session.add(attachment_model)
             session.commit()
+
         except Exception as e:
-            session.rollback()
+            if session:
+                session.rollback()
             raise e
         finally:
-            session.close()
+            if session:
+                session.close()
 
     def _from_model(self, model: Issue) -> IssueModelSqlAlchemy:
         return IssueModelSqlAlchemy(
@@ -90,7 +99,7 @@ class IssuePostgresqlRepository(IssueRepository):
         )
         
     def _to_model(self,issue:Issue)->IssueModelSqlAlchemy:
-        return IssueModelSqlAlchemy(
+        issue_entity = IssueModelSqlAlchemy(
             id=issue.id,
             auth_user_id=issue.auth_user_id,
             auth_user_agent_id=issue.auth_user_agent_id,
@@ -102,5 +111,13 @@ class IssuePostgresqlRepository(IssueRepository):
             channel_plan_id=issue.channel_plan_id
         )
 
+        return issue_entity      
 
-    
+    def _to_model_attachment(self,attachment:IssueAttachment)->IssueAttachmentSqlAlchemy:
+        attachment_entity = IssueAttachmentSqlAlchemy(
+                id=attachment.id,
+                issue_id=attachment.issue_id,
+                file_path=attachment.file_path
+        )
+
+        return attachment_entity  

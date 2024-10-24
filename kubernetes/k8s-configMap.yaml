@@ -6,3 +6,5 @@ data:
   FLASK_APP: "flaskr/app"
   FLASK_ENV: "production"
   APP_NAME: "abcall-issues-api"
+  AUTH_API_PATH: "http://abcall-auth-api-service:3004"
+  OPENAI_API_PATH: "https://api.openai.com/v1/chat/completions"

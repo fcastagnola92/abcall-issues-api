@@ -5,10 +5,11 @@ import uuid
 from datetime import datetime
 from typing import TypedDict
 from ..domain.interfaces.issue_repository import IssueRepository
-from ..domain.models import Issue
+from ..domain.models import Issue, IssueAttachment
 from ..utils import Logger
 from  config import Config
 from .auth_service import AuthService
+from .openAiService import OpenAIService
 from ..utils import Logger
 log = Logger()
 class Status(TypedDict):
@@ -16,9 +17,9 @@ class Status(TypedDict):
     name: str
    
 class IssueStatus:
-    NEW = {"id": UUID("00000000-0000-0000-0000-000000000001"), "name": "New"}
-    IN_PROGRESS = {"id": UUID("00000000-0000-0000-0000-000000000002"), "name": "In Progress"}
-    RESOLVED = {"id": UUID("00000000-0000-0000-0000-000000000003"), "name": "Resolved"}
+    NEW = {"id": UUID("574408a7-3aa0-4eab-b279-62ed10e6107e"), "name": "New"}
+    IN_PROGRESS = {"id": UUID("18e7d7dd-247b-4e27-aa0e-4f15e8ba5930"), "name": "In Progress"}
+    RESOLVED = {"id": UUID("791353c6-3899-4d35-bcd9-af8775e240bf"), "name": "Resolved"}
     CLOSED = {"id": UUID("00000000-0000-0000-0000-000000000004"), "name": "Closed"}
 
     ALL_STATUSES = [NEW, IN_PROGRESS, RESOLVED, CLOSED]
@@ -58,7 +59,8 @@ class IssueService:
         else:
             return None
 
-    def create_issue(self, auth_user_id: uuid, auth_user_agent_id: uuid, subject: str, description: str) -> uuid:
+    def create_issue(self, auth_user_id: uuid, auth_user_agent_id: uuid, subject: str, description: str, file_path: str = None) -> uuid:
+    # Ensure all necessary fields are provided
         if not auth_user_id or not subject or not description or not auth_user_agent_id:
             raise ValueError("All fields are required to create an issue.")
             
@@ -74,5 +76,23 @@ class IssueService:
             channel_plan_id=None
         )
 
-        issue_id = self.issue_repository.create_issue(new_issue)
-        return issue_id
+        new_attachment = None
+        if file_path:
+            new_attachment = IssueAttachment(
+                id=uuid.uuid4(),
+                issue_id=new_issue.id,
+                file_path=file_path,
+            )
+        self.issue_repository.create_issue(new_issue, new_attachment)
+        return new_issue
+    
+    def ask_generative_ai(self,question):
+        """
+        method to ask question to chat gpt
+        Args:
+            question (str): question to ask
+        Return:
+            answer (str): answer about ask
+        """
+        ia_service=OpenAIService()
+        return ia_service.ask_chatgpt(question)

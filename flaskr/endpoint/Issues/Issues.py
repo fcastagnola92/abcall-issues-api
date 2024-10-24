@@ -1,13 +1,12 @@
 from flask_restful import Resource
 from flask import jsonify, request
-import logging
-import requests
+import os
+from config import Config
+from http import HTTPStatus
 from ...application.issue_service import IssueService
 from ...infrastructure.databases.issue_postresql_repository import IssuePostgresqlRepository
-from http import HTTPStatus
 from ...utils import Logger
 
-from config import Config
 
 log = Logger()
 
@@ -20,22 +19,37 @@ class Issue(Resource):
 
     def post(self,action=None):
         try:
-            log.info(f"Receive request to create a new issue")
+            file_path = None
+            file_path = None
+            file = request.files.get('file')
 
-            data = request.get_json()
-            auth_user_id = data.get("auth_user_id")
-            auth_user_agent_id = data.get('auth_user_agent_id')
-            subject = data.get("subject")
-            description = data.get("description")
+            if request.is_json:  
+                data = request.get_json()
+            else:
+                data = request.form.to_dict()
+            
+            auth_user_id = data.get("auth_user_id") 
+            auth_user_agent_id = data.get('auth_user_agent_id')  
+            subject = data.get("subject")  
+            description = data.get("description")  
+            log.info(f"auth_user_id at {auth_user_id}")
+           
+            if file:
+                upload_directory = os.path.join(os.getcwd(), 'uploads')
+                os.makedirs(upload_directory, exist_ok=True)
+                file_path = os.path.join(upload_directory, file.filename)
+                file.save(file_path)
+                log.info(f"File uploaded successfully at {file_path}")
 
-            issue_id = self.service.create_issue(
+            self.service.create_issue(
                 auth_user_id=auth_user_id,
                 auth_user_agent_id=auth_user_agent_id,
                 subject=subject,
-                description=description
+                description=description,
+                file_path=file_path
             )
 
-            return {"message": f"Issue created successfully with ID {issue_id}"}, HTTPStatus.CREATED
+            return {"message": f"Issue created successfully with ID"}, HTTPStatus.CREATED
 
         except Exception as ex:
             log.error(f"Error while creating issue: {ex}")
@@ -46,6 +60,8 @@ class Issue(Resource):
             return self.getIssuesByCustomer()
         elif action == 'getIssuesDasboard':
             return self.getIssuesDasboard()
+        if action == 'getIAResponse':
+            return self.getIAResponse()
         else:
             return {"message": "Action not found"}, 404
         
@@ -85,8 +101,6 @@ class Issue(Resource):
 
     def getIssuesDasboard(self):
         try:
-            log.info(f'Receive request to get issues')
-            
             customer_id = request.args.get('customer_id')
             status = request.args.get('status')
             channel_plan_id = request.args.get('channel_plan_id')
@@ -112,3 +126,19 @@ class Issue(Resource):
         except Exception as ex:
             log.error(f'Error trying to get issue list: {ex}')
             return {'message': 'Something went wrong trying to get the issue dashboard'}, HTTPStatus.INTERNAL_SERVER_ERROR
+          
+        
+    def getIAResponse(self):
+        try:
+
+            log.info(f'Receive request to ask to open ai')
+            question = request.args.get('question')
+            answer=self.service.ask_generative_ai(question)
+            return {
+                'answer': answer
+            }, HTTPStatus.OK
+            
+        except Exception as ex:
+            log.error(f'Some error occurred trying ask open ai: {ex}')
+            return {'message': 'Something was wrong trying ask open ai'}, HTTPStatus.INTERNAL_SERVER_ERROR
+        

@@ -53,6 +53,17 @@ jobs:
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+      
+      - name: Set environment variables
+        env:
+          ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
+          ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
+          ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}
+          AZURE_RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }}
+          DATABASE_URI: ${{ secrets.DATABASE_URI }}
+          TOKEN_OPENAI: ${{ secrets.TOKEN_OPENAI }}
+        run: |
+          echo "Environment variables are set"
         
       - name: Log in to ACR
         run: |
@@ -70,8 +81,12 @@ jobs:
 
       - name: Deploy to AKS 🚀
         run: |
+          DATABASE_URI="${{ secrets.DATABASE_URI }}"
+          TOKEN_OPENAI="${{ secrets.TOKEN_OPENAI }}"
           sed "s/{{IMAGE_TAG}}/build-${GITHUB_RUN_NUMBER}/g" ./kubernetes/k8s-deployment.tmpl > kubernetes/new-k8s-deployment.yaml
-          sed "s/{{DATABASE_URI}}/${DATABASE_URI}/g" ./kubernetes/k8s-secrets.tmpl > kubernetes/k8s-secrets.yaml
+          sed -e "s|{{DATABASE_URI}}|${DATABASE_URI}|g" \
+          -e "s|{{TOKEN_OPENAI}}|${TOKEN_OPENAI}|g" \
+          ./kubernetes/k8s-secrets.tmpl > kubernetes/k8s-secrets.yaml
           kubectl apply -f kubernetes/k8s-secrets.yaml
           kubectl apply -f kubernetes/k8s-configMap.yaml
           kubectl apply -f kubernetes/new-k8s-deployment.yaml
