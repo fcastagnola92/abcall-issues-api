@@ -81,6 +81,8 @@ jobs:
 
       - name: Deploy to AKS 🚀
         run: |
+          echo "DATABASE_URI=${{ secrets.DATABASE_URI }}" >> $GITHUB_ENV
+          echo "TOKEN_OPENAI=${{ secrets.TOKEN_OPENAI }}" >> $GITHUB_ENV
           sed "s/{{IMAGE_TAG}}/build-${GITHUB_RUN_NUMBER}/g" ./kubernetes/k8s-deployment.tmpl > kubernetes/new-k8s-deployment.yaml
           sed -e "s/{{DATABASE_URI}}/${DATABASE_URI}/g" \
           -e "s/{{TOKEN_OPENAI}}/${TOKEN_OPENAI}/g" \
