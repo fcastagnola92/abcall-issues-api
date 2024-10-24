@@ -42,7 +42,7 @@ class IssuePostgresqlRepository(IssueRepository):
             if created_at:
                 query = query.filter(IssueModelSqlAlchemy.created_at >= created_at)
             if closed_at:
-                query = query.filter(IssueModelSqlAlchemy.closed_at <= closed_at)
+                query = query.filter(IssueModelSqlAlchemy.created_at <= closed_at)
 
             issues_sqlalchemy = query.all()
 
