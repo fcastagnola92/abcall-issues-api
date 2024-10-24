@@ -17,8 +17,8 @@ class Status(TypedDict):
     name: str
    
 class IssueStatus:
-    NEW = {"id": UUID("00000000-0000-0000-0000-000000000001"), "name": "New"}
-    IN_PROGRESS = {"id": UUID("00000000-0000-0000-0000-000000000002"), "name": "In Progress"}
+    NEW = {"id": UUID("574408a7-3aa0-4eab-b279-62ed10e6107e"), "name": "New"}
+    IN_PROGRESS = {"id": UUID("18e7d7dd-247b-4e27-aa0e-4f15e8ba5930"), "name": "In Progress"}
     RESOLVED = {"id": UUID("791353c6-3899-4d35-bcd9-af8775e240bf"), "name": "Resolved"}
     CLOSED = {"id": UUID("00000000-0000-0000-0000-000000000004"), "name": "Closed"}
 
