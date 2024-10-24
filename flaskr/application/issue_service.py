@@ -43,10 +43,12 @@ class IssueService:
     def list_issues_filtered(self, customer_id, status=None, channel_plan_id=None, created_at=None, closed_at=None):
         auth_service = AuthService()
         list_user_customer = auth_service.get_users_by_customer_list(customer_id)
+        self.log.info(f'list user customer {list_user_customer}')
         issues = []
         
         if list_user_customer:
             for item in list_user_customer:
+                self.log.info(f'for each user {item}')
                 user_issues = self.issue_repository.list_issues_filtered(
                     user_id=item.auth_user_id, 
                     status=status, 

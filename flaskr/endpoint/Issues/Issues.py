@@ -107,6 +107,8 @@ class Issue(Resource):
             created_at = request.args.get('created_at')
             closed_at = request.args.get('closed_at')
 
+            log.info(f'Receive request to getIssuesDashboard {customer_id}')
+
             issue_list = self.service.list_issues_filtered(
                 customer_id=customer_id,
                 status=status,
@@ -114,12 +116,15 @@ class Issue(Resource):
                 created_at=created_at,
                 closed_at=closed_at
             )
+            log.info(f'issue list {issue_list}')
 
             list_issues = []
             if issue_list:
                 list_issues = [
                     issue.to_dict() if hasattr(issue, 'to_dict') else issue for issue in issue_list
                 ]
+
+            log.info(f'list issue {list_issues}')
 
             return list_issues, HTTPStatus.OK
 
