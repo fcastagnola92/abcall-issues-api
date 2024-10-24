@@ -83,17 +83,19 @@ class Issue(Resource):
             log.error(f'Some error occurred trying to get issue list: {ex}')
             return {'message': 'Something was wrong trying to get issue list'}, HTTPStatus.INTERNAL_SERVER_ERROR    
     
-    def listIssuesFiltered(self, status=None, channel_plan_id=None, created_at=None, closed_at=None):
-        query = self.session.query(Issue)
+    def listIssuesFiltered(self, user_id, status=None, channel_plan_id=None, created_at=None, closed_at=None):
+        query = self.session.query(Issue).filter(Issue.user_id == user_id)
 
         if status:
             query = query.filter(Issue.status == status)
         if channel_plan_id:
             query = query.filter(Issue.channel_plan_id == channel_plan_id)
-        if created_at:
+        if created_at and closed_at:
+            query = query.filter(Issue.created_at.between(created_at, closed_at))
+        elif created_at:
             query = query.filter(Issue.created_at >= created_at)
-        if closed_at:
-            query = query.filter(Issue.closed_at <= closed_at)
+        elif closed_at:
+            query = query.filter(Issue.created_at <= closed_at)
 
         return query.all()
 
