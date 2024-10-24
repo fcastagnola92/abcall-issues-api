@@ -85,8 +85,36 @@ class IssuePostgresqlRepository(IssueRepository):
             if session:
                 session.close()
 
-    def _from_model(self, model: Issue) -> IssueModelSqlAlchemy:
-        return IssueModelSqlAlchemy(
+    # def _from_model(self, model: Issue) -> IssueModelSqlAlchemy:
+    #     return IssueModelSqlAlchemy(
+    #         id=model.id,
+    #         auth_user_id=model.auth_user_id,
+    #         auth_user_agent_id=model.auth_user_agent_id,
+    #         status=model.status,
+    #         subject=model.subject,
+    #         description=model.description,
+    #         created_at=model.created_at,
+    #         closed_at=model.closed_at,
+    #         channel_plan_id=model.channel_plan_id
+    #     )
+        
+    # def _to_model(self,issue:Issue)->IssueModelSqlAlchemy:
+    #     issue_entity = IssueModelSqlAlchemy(
+    #         id=issue.id,
+    #         auth_user_id=issue.auth_user_id,
+    #         auth_user_agent_id=issue.auth_user_agent_id,
+    #         status=issue.status,
+    #         subject=issue.subject,
+    #         description=issue.description,
+    #         created_at=issue.created_at,
+    #         closed_at=issue.closed_at,
+    #         channel_plan_id=issue.channel_plan_id
+    #     )
+
+    #     return issue_entity    
+
+    def _from_model(self, model: IssueModelSqlAlchemy) -> Issue:
+        return Issue(
             id=model.id,
             auth_user_id=model.auth_user_id,
             auth_user_agent_id=model.auth_user_agent_id,
@@ -97,9 +125,8 @@ class IssuePostgresqlRepository(IssueRepository):
             closed_at=model.closed_at,
             channel_plan_id=model.channel_plan_id
         )
-        
     def _to_model(self,issue:Issue)->IssueModelSqlAlchemy:
-        issue_entity = IssueModelSqlAlchemy(
+        return IssueModelSqlAlchemy(
             id=issue.id,
             auth_user_id=issue.auth_user_id,
             auth_user_agent_id=issue.auth_user_agent_id,
@@ -109,9 +136,7 @@ class IssuePostgresqlRepository(IssueRepository):
             created_at=issue.created_at,
             closed_at=issue.closed_at,
             channel_plan_id=issue.channel_plan_id
-        )
-
-        return issue_entity      
+        )  
 
     def _to_model_attachment(self,attachment:IssueAttachment)->IssueAttachmentSqlAlchemy:
         attachment_entity = IssueAttachmentSqlAlchemy(
