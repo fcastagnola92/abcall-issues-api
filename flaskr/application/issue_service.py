@@ -5,7 +5,7 @@ import uuid
 from datetime import datetime
 from typing import TypedDict
 from ..domain.interfaces.issue_repository import IssueRepository
-from ..domain.models import Issue
+from ..domain.models import Issue, IssueAttachment
 from ..utils import Logger
 from  config import Config
 from .auth_service import AuthService
@@ -59,7 +59,8 @@ class IssueService:
         else:
             return None
 
-    def create_issue(self, auth_user_id: uuid, auth_user_agent_id: uuid, subject: str, description: str) -> uuid:
+    def create_issue(self, auth_user_id: uuid, auth_user_agent_id: uuid, subject: str, description: str, file_path: str = None) -> uuid:
+    # Ensure all necessary fields are provided
         if not auth_user_id or not subject or not description or not auth_user_agent_id:
             raise ValueError("All fields are required to create an issue.")
             
@@ -75,8 +76,15 @@ class IssueService:
             channel_plan_id=None
         )
 
-        issue_id = self.issue_repository.create_issue(new_issue)
-        return issue_id
+        new_attachment = None
+        if file_path:
+            new_attachment = IssueAttachment(
+                id=uuid.uuid4(),
+                issue_id=new_issue.id,
+                file_path=file_path,
+            )
+        self.issue_repository.create_issue(new_issue, new_attachment)
+        return new_issue
     
     def ask_generative_ai(self,question):
         """

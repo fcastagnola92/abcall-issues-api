@@ -29,7 +29,7 @@ run-tests:
 	 FLASK_ENV=test python -m unittest discover -s tests -p '*Test.py' -v
 
 run-tests-coverage:
-	 coverage run -m unittest discover
+	 coverage run -m unittest discover -s tests -p '*Test.py' -v
 	 coverage report -m
 	 coverage html
 	 coverage report --fail-under=50

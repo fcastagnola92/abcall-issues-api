@@ -25,3 +25,14 @@ class IssueModelSqlAlchemy(Base):
     closed_at = Column(DateTime(timezone=True), default=func.now())
     channel_plan_id = Column(PG_UUID(as_uuid=True), nullable=True)
     issue_status = relationship("IssueStateSqlAlchemy")
+
+
+
+class IssueAttachmentSqlAlchemy(Base):
+    __tablename__ = 'issue_attachment'
+    
+    id = Column(PG_UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    issue_id = Column(PG_UUID(as_uuid=True), ForeignKey('issue.id'), nullable=False)
+    file_path = Column(String(255), nullable=False) 
+
+    issue = relationship("IssueModelSqlAlchemy", backref="attachments")
