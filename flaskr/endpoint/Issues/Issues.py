@@ -19,14 +19,21 @@ class Issue(Resource):
 
     def post(self,action=None):
         try:
-
-            auth_user_id = request.form.get("auth_user_id")
-            auth_user_agent_id = request.form.get('auth_user_agent_id')
-            subject = request.form.get("subject")
-            description = request.form.get("description")
-
-            file_path = None  # Initialize file_path in case no file is provided
+            file_path = None
+            file_path = None
             file = request.files.get('file')
+
+            if request.is_json:  
+                data = request.get_json()
+            else:
+                data = request.form.to_dict()
+            
+            auth_user_id = data.get("auth_user_id") 
+            auth_user_agent_id = data.get('auth_user_agent_id')  
+            subject = data.get("subject")  
+            description = data.get("description")  
+            log.info(f"auth_user_id at {auth_user_id}")
+           
             if file:
                 upload_directory = os.path.join(os.getcwd(), 'uploads')
                 os.makedirs(upload_directory, exist_ok=True)
@@ -34,7 +41,7 @@ class Issue(Resource):
                 file.save(file_path)
                 log.info(f"File uploaded successfully at {file_path}")
 
-            issue_id = self.service.create_issue(
+            self.service.create_issue(
                 auth_user_id=auth_user_id,
                 auth_user_agent_id=auth_user_agent_id,
                 subject=subject,
