@@ -57,6 +57,7 @@ class IssueService:
                     closed_at=closed_at
                 )
                 issues.extend(user_issues)
+                
             return issues
         else:
             return None
