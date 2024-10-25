@@ -107,7 +107,9 @@ class Issue(Resource):
             created_at = request.args.get('created_at')
             closed_at = request.args.get('closed_at')
 
-            log.info(f'Receive request to getIssuesDashboard {customer_id}')
+
+
+            log.info(f'Receive request to getIssuesDashboard {customer_id}  {status} {channel_plan_id} {created_at} {closed_at}')
 
             issue_list = self.service.list_issues_filtered(
                 customer_id=customer_id,
