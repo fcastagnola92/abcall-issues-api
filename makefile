@@ -32,7 +32,7 @@ run-tests-coverage:
 	 coverage run -m unittest discover -s tests -p '*Test.py' -v
 	 coverage report -m
 	 coverage html
-	 coverage report --fail-under=50
+	 coverage report --fail-under=80
 
 docker-gunicorn:
 	  gunicorn -w 4 --bind 127.0.0.1:$(PORT) wsgi:app

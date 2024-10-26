@@ -18,9 +18,7 @@ services:
       - db
     networks:
       - issue_net
-      - app_net
-
-      
+      - app_net 
   db:
     build:
       context: .
@@ -35,10 +33,6 @@ services:
       - "5436:5432"
     networks:
       - issue_net
-
-
-
-
 networks:
   issue_net:
     name: issue_net

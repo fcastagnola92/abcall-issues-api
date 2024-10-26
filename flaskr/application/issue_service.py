@@ -66,7 +66,6 @@ class IssueService:
     # Ensure all necessary fields are provided
         if not auth_user_id or not subject or not description or not auth_user_agent_id:
             raise ValueError("All fields are required to create an issue.")
-            
         new_issue = Issue(
             id=uuid.uuid4(),
             auth_user_id=auth_user_id,
