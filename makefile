@@ -65,9 +65,9 @@ create-database:
 	docker exec issue-local-db psql -U develop -d issue-db -f /docker-entrypoint-initdb.d/init.sql
 
 docker-db-truncate:
-	docker exec -it issue-test-db psql -U develop -d issue-db  -c  "TRUNCATE TABLE issue CASCADE;"
-	docker exec -it issue-test-db psql -U develop -d issue-db  -c  "TRUNCATE TABLE issue_state CASCADE;"
-	docker exec -it issue-test-db psql -U develop -d issue-db  -c  "TRUNCATE TABLE issue_attachment CASCADE;"
+	docker exec issue-test-db psql -U develop -d issue-db  -c  "TRUNCATE TABLE issue CASCADE;"
+	docker exec issue-test-db psql -U develop -d issue-db  -c  "TRUNCATE TABLE issue_state CASCADE;"
+	docker exec issue-test-db psql -U develop -d issue-db  -c  "TRUNCATE TABLE issue_attachment CASCADE;"
 
 
 kubernetes-up:
