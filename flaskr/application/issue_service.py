@@ -88,6 +88,18 @@ class IssueService:
         self.issue_repository.create_issue(new_issue, new_attachment)
         return new_issue
     
+    def find_issues(self, user_id: UUID, page: int, limit: int):
+        if not user_id:
+            raise ValueError("All fields are required to create an issue.")
+
+        issue_response = self.issue_repository.find(
+                    user_id=user_id,
+                    page=page,
+                    limit=limit
+                )
+        
+        return issue_response
+
     def ask_generative_ai(self,question):
         """
         method to ask question to chat gpt

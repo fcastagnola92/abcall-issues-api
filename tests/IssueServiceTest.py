@@ -1,9 +1,10 @@
 import unittest
 from unittest.mock import patch
-from builder import AuthUserCustomerBuilder, IssueBuilder
+from builder import AuthUserCustomerBuilder, IssueBuilder, IssueAttachmentBuilder
 from flaskr.application.issue_service import IssueService
 from flaskr.domain.models import Issue, AuthUserCustomer
 from mocks.repositories import IssueMockRepository
+from utils.testHelper import dict_to_obj
 
 
 class TestIssueService(unittest.TestCase):
@@ -111,6 +112,56 @@ class TestIssueService(unittest.TestCase):
 
 
         self.assertEqual(issue.id, issue_mock.id)
+
+    @patch('flaskr.application.issue_service.IssueStatus')
+    @patch('uuid.uuid4', return_value="e3a54f43-3e8d-4c16-b340-9aba07dfb1ec")
+    def test_should_create_an_issue_with_attachment(self, uuid4Mock, IssueStatusMock):
+        uuid_mock = "e3a54f43-3e8d-4c16-b340-9aba07dfb1ec"
+        issue_mock = IssueBuilder() \
+                    .with_id(uuid_mock) \
+                    .build()
+        attachment_mock = IssueAttachmentBuilder() \
+                          .with_id(uuid_mock) \
+                          .with_issue_id(uuid_mock) \
+                          .build()
+        instance = IssueStatusMock.return_value
+        instance.NEW.return_value = {"id": issue_mock.status, "name": "New"}
+
+        issue_service = IssueService(issue_repository=IssueMockRepository([]))
+        issue = issue_service.create_issue(
+            auth_user_id=issue_mock.auth_user_id,
+            auth_user_agent_id=issue_mock.auth_user_agent_id,
+            subject=issue_mock.subject,
+            description=issue_mock.description,
+            file_path=attachment_mock.file_path
+        )
+
+
+        self.assertEqual(issue.id, issue_mock.id)
+
+    def test_error_in_issue_finder_without_a_user(self):
+        with self.assertRaises(ValueError) as context:
+            issue_service = IssueService()
+            self.assertRaises(issue_service.find_issues(user_id=None, page=1, limit=10))
+        error_expected = "All fields are required to create an issue."
+
+        self.assertEqual(str(context.exception), error_expected)
+
+    def test_should_get_issues_by_user(self):
+        issues_mocked: list[Issue] = []
+        issues_mocked.append(IssueBuilder().build())
+
+        issue_service = IssueService(issue_repository=IssueMockRepository(issues_mocked))
+        issues = issue_service.find_issues(issue_service,1,10)
+        issue_obj = dict_to_obj(issues)
+
+
+        self.assertEqual(len(issue_obj.data), 1)
+        self.assertEqual(issue_obj.page, 1)
+        self.assertEqual(issue_obj.limit, 10)
+        self.assertEqual(issue_obj.total_pages, 1)
+        self.assertFalse(issue_obj.has_next)
+
         
 
 

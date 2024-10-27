@@ -21,3 +21,13 @@ class ConfigTestCase(unittest.TestCase):
         environment = envConfig.ENVIRONMENT
         
         self.assertEqual(environment, environmentExpected)
+
+    @patch('os.getenv', return_value='production')
+    @patch('dotenv.load_dotenv', return_value="production")
+    def test_config_environment_when_it_is_production(self, getenv_mocked, load_dotenv_mocked):
+        envConfig = Config()
+        environmentExpected = "production"
+
+        environment = envConfig.ENVIRONMENT
+        
+        self.assertEqual(environment, environmentExpected)

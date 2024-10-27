@@ -1,2 +1,2 @@
 from .healthCheck.HealthCheck import *
-from .Issues.Issues import *
+from .issues.Issues import *

@@ -18,3 +18,6 @@ class IssueRepository:
     
     def create_issue_attachment(self, issue_attachment: dict)-> IssueAttachment:
         raise NotImplementedError
+    
+    def find(self, user_id = None,page=None,limit=None):
+        raise NotImplementedError

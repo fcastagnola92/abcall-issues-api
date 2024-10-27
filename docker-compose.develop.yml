@@ -30,7 +30,7 @@ services:
       - "./data/postgresql:/var/lib/postgresql"
       - "./docker/postgresql:/docker-entrypoint-initdb.d"
     ports:
-      - "5436:5432"
+      - "5433:5432"
     networks:
       - issue_net
 networks:

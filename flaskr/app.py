@@ -4,7 +4,7 @@ from .utils.json_custom_encoder import JSONCustomEncoder
 import requests
 from flaskr import create_app
 from config import Config
-from .endpoint import HealthCheck,Issue
+from .endpoint import HealthCheck,Issue, Issues
 import signal
 import logging
 
@@ -28,3 +28,4 @@ api = Api(app)
 #resources
 api.add_resource(HealthCheck, '/health')
 api.add_resource(Issue, '/issue/<string:action>')
+api.add_resource(Issues, '/issues/<string:action>/<string:user_id>')
