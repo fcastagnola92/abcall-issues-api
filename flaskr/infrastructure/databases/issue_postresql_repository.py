@@ -1,10 +1,13 @@
+from math import ceil
+from flask import jsonify
+import json
 from sqlalchemy import create_engine,extract, func
 from sqlalchemy.orm import sessionmaker
 from typing import List, Optional
 from ...utils import Logger
 from ...domain.models import Issue, IssueAttachment
 from ...domain.interfaces import IssueRepository
-from ...infrastructure.databases.model_sqlalchemy import Base, IssueModelSqlAlchemy, IssueAttachmentSqlAlchemy
+from ...infrastructure.databases.model_sqlalchemy import Base, IssueModelSqlAlchemy, IssueAttachmentSqlAlchemy, IssueStateSqlAlchemy
 log = Logger()
 from ...domain.constants import ISSUE_STATUS_SOLVED
 
@@ -81,6 +84,41 @@ class IssuePostgresqlRepository(IssueRepository):
             if session:
                 session.rollback()
             raise e
+        finally:
+            if session:
+                session.close()
+    
+    def find(self, user_id = None,page=None,limit=None):
+        try:
+            session = self.Session()
+            total_items = session.query(IssueModelSqlAlchemy).filter(IssueModelSqlAlchemy.auth_user_id == user_id).count()
+            total_pages = ceil(total_items / limit)
+            has_next = page < total_pages
+
+            issues = session.query(IssueModelSqlAlchemy).join(IssueStateSqlAlchemy).filter(IssueModelSqlAlchemy.auth_user_id == user_id).order_by(IssueModelSqlAlchemy.created_at).offset((page - 1) * limit).limit(limit).all()
+
+            data = [{
+                "id": str(issue.id),
+                "auth_user_id": str(issue.auth_user_id),
+                "status": str(issue.issue_status.name),
+                "subject": issue.subject,
+                "description": issue.description,
+                "created_at": str(issue.created_at),
+                "closed_at": str(issue.closed_at),
+                "channel_plan_id": str(issue.channel_plan_id)
+                } for issue in issues]
+            
+            return {
+                "page": page,
+                "limit": limit,
+                "total_pages": total_pages,
+                "has_next": has_next,
+                "data": data
+            }
+        except Exception as ex:
+            if session:
+                session.rollback()
+            raise ex
         finally:
             if session:
                 session.close()
