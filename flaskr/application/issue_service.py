@@ -27,6 +27,7 @@ class IssueService:
     def __init__(self, issue_repository: IssueRepository=None):
         self.log = Logger()
         self.issue_repository=issue_repository
+        self.config=Config()
 
     def list_issues_period(self, customer_id, year, month):
         auth_service=AuthService()
@@ -110,3 +111,17 @@ class IssueService:
         """
         ia_service=OpenAIService()
         return ia_service.ask_chatgpt(question)
+    
+
+    def ask_predictive_analitic(self,user_id:UUID) -> str :
+        """
+        method to ask predictive analitic
+        Args:
+            question (str): question to ask
+        Return:
+            answer (str): answer about ask
+        """
+        print('entró en el predictive analitic')
+        ia_service=OpenAIService()
+        context=self.config.OPENAI_PREDICTIVE_CONTEXT
+        return ia_service.ask_predictive_ai_chatgpt(context)
