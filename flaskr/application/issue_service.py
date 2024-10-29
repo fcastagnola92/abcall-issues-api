@@ -117,7 +117,7 @@ class IssueService:
         """
         method to ask predictive analitic
         Args:
-            question (str): question to ask
+            user_id (str): id user to build de context
         Return:
             answer (str): answer about ask
         """
