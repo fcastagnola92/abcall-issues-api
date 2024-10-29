@@ -137,7 +137,6 @@ class Issue(Resource):
         
     def getIAResponse(self):
         try:
-
             log.info(f'Receive request to ask to open ai')
             question = request.args.get('question')
             answer=self.service.ask_generative_ai(question)
@@ -162,7 +161,7 @@ class Issues(Resource):
             return {"message": "Action not found"}, HTTPStatus.NOT_FOUND
         
 
-    def find(self, user_id:int):
+    def find(self, user_id:str):
         try:
             log.info(f'Receive request to get issues by user')
             page = int(request.args.get('page'))
