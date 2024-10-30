@@ -95,8 +95,6 @@ class Issue(Resource):
             query = query.filter(Issue.created_at.between(created_at, closed_at))
         elif created_at:
             query = query.filter(Issue.created_at >= created_at)
-        elif closed_at:
-            query = query.filter(Issue.created_at <= closed_at)
 
         return query.all()
 
@@ -108,22 +106,25 @@ class Issue(Resource):
             created_at = request.args.get('created_at')
             closed_at = request.args.get('closed_at')
 
-     
             log.info(f'Receive request to getIssuesDashboard {customer_id}  {status} {channel_plan_id} {created_at} {closed_at}')
 
             issue_list = self.service.list_issues_filtered(
                 customer_id=customer_id,
-                status=None,
-                channel_plan_id=None,
-                created_at=None,
-                closed_at=None
+                status=status,
+                channel_plan_id=channel_plan_id,
+                created_at=created_at,
+                closed_at=closed_at
             )
             log.info(f'issue list {issue_list}')
 
             list_issues = []
             if issue_list:
                 list_issues = [
-                    issue.to_dict() if hasattr(issue, 'to_dict') else issue for issue in issue_list
+                    {
+                        "status": issue.get("status"),
+                        "channel_plan_id": issue.get("channel_plan_id"),
+                        "created_at": issue.get("created_at")
+                    } for issue in issue_list
                 ]
 
             log.info(f'list issue {list_issues}')
