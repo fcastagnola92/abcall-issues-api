@@ -63,6 +63,8 @@ class Issue(Resource):
             return self.getIAResponse()
         if action== 'find':
             return self.get_issues_by_user()
+        if action == 'get_issue_by_id':
+            return self.getIssueDetail()
         else:
             return {"message": "Action not found"}, HTTPStatus.NOT_FOUND
         
@@ -134,8 +136,32 @@ class Issue(Resource):
         except Exception as ex:
             log.error(f'Error trying to get issue list: {ex}')
             return {'message': 'Something went wrong trying to get the issue dashboard'}, HTTPStatus.INTERNAL_SERVER_ERROR
-          
         
+    def getIssueDetail(self):
+        try:
+            customer_id = request.args.get('customer_id')
+            issue_id = request.args.get('issue_id')
+
+            issue = self.service.get_issue_by_id(customer_id=customer_id, issue_id=issue_id)
+            log.info(f'Issue retrieved: {issue}')
+            
+            if issue:
+                issue_detail = {
+                    "created_at": issue.get("created_at"),
+                    "id": issue.get("id"),
+                    "subject": issue.get("subject"),
+                    "description": issue.get("description"),
+                    "status": issue.get("status")                  
+                }
+                return issue_detail, HTTPStatus.OK
+            else:
+                return {'message': 'Issue not found'}, HTTPStatus.NOT_FOUND
+
+        except Exception as ex:
+            log.error(f'Error trying to get issue detail: {ex}')
+            return {'message': 'Something went wrong trying to get the issue detail'}, HTTPStatus.INTERNAL_SERVER_ERROR
+
+
     def getIAResponse(self):
         try:
             log.info(f'Receive request to ask to open ai')
