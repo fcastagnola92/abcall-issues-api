@@ -60,6 +60,7 @@ class TestIssuePostgresqlRepository(unittest.TestCase):
 
         self.assertGreaterEqual(len(result), 0)
 
+    @patch('flaskr.infrastructure.databases.issue_postresql_repository.create_engine')
     @patch('flaskr.infrastructure.databases.issue_postresql_repository.sessionmaker')
     def test_get_issue_by_id(self, mock_sessionmaker):
         mock_session = MagicMock()
