@@ -5,9 +5,12 @@ from flaskr.infrastructure.databases.issue_postresql_repository import IssuePost
 from flaskr.domain.models import Issue, IssueAttachment
 
 class TestIssuePostgresqlRepository(unittest.TestCase):
-    def setUp(self):
-        self.connection_string = 'mock_connection_string'
-        self.repo = IssuePostgresqlRepository(self.connection_string)
+    @patch('flaskr.infrastructure.databases.issue_postgresql_repository.create_engine')
+    @patch('flaskr.infrastructure.databases.issue_postgresql_repository.sessionmaker')
+    def setUp(self, mock_sessionmaker, mock_create_engine):
+        mock_create_engine.return_value = MagicMock()
+        self.repo = IssuePostgresqlRepository('mock_connection_string')
+        self.repo.Session = MagicMock()
 
     @patch('flaskr.infrastructure.databases.issue_postgresql_repository.create_engine')
     @patch('flaskr.infrastructure.databases.issue_postgresql_repository.sessionmaker')
