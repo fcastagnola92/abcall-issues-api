@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch, MagicMock
 from uuid import uuid4
-from flaskr.infrastructure.databases.issue_postresql_repository import IssuePostgresqlRepositoryy
+from flaskr.infrastructure.databases.issue_postresql_repository import IssuePostgresqlRepository
 from flaskr.domain.models import Issue, IssueAttachment
 
 class TestIssuePostgresqlRepository(unittest.TestCase):
