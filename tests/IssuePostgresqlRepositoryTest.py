@@ -4,6 +4,14 @@ from uuid import uuid4
 from flaskr.infrastructure.databases.issue_postresql_repository import IssuePostgresqlRepository
 from flaskr.domain.models import Issue, IssueAttachment
 
+class IssueMock:
+        def __init__(self, id, subject, description, created_at, closed_at):
+            self.id = id
+            self.subject = subject
+            self.description = description
+            self.created_at = created_at
+            self.closed_at = closed_at
+
 class TestIssuePostgresqlRepository(unittest.TestCase):
     @patch('flaskr.infrastructure.databases.issue_postresql_repository.create_engine')
     @patch('flaskr.infrastructure.databases.issue_postresql_repository.sessionmaker')
@@ -58,7 +66,7 @@ class TestIssuePostgresqlRepository(unittest.TestCase):
 
         result = self.repo.list_issues_filtered(user_id=mock_issue.auth_user_id, status='OPEN')
 
-        self.assertGreaterEqual(len(result), 0)
+        self.assertGreaterEqual(len(result), 0)   
 
     @patch('flaskr.infrastructure.databases.issue_postresql_repository.create_engine')
     @patch('flaskr.infrastructure.databases.issue_postresql_repository.sessionmaker')
@@ -68,18 +76,19 @@ class TestIssuePostgresqlRepository(unittest.TestCase):
         mock_session_instance = mock_session.return_value
 
         issue_id = uuid4()
-        mock_issue = {
-            "IssueModelSqlAlchemy": MagicMock(
-                id=issue_id,
-                subject="Test Issue",
-                description="This is a test issue",
-                created_at="2023-04-01",
-                closed_at=None
-            ),
-            "status_name": "IN_PROGRESS"
-        }
-        
-        mock_session_instance.query.return_value.join.return_value.filter.return_value.first.return_value = mock_issue
+        mock_issue = IssueMock(
+            id=issue_id,
+            subject="Test Issue",
+            description="This is a test issue",
+            created_at="2023-04-01",
+            closed_at=None
+        )
+
+        mock_issue_data = MagicMock()
+        mock_issue_data.IssueModelSqlAlchemy = mock_issue
+        mock_issue_data.status_name = "IN_PROGRESS"
+
+        mock_session_instance.query.return_value.join.return_value.filter.return_value.first.return_value = mock_issue_data
 
         result = self.repo.get_issue_by_id(issue_id=str(issue_id))
         
