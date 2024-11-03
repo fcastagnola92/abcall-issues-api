@@ -5,15 +5,15 @@ from flaskr.infrastructure.databases.issue_postresql_repository import IssuePost
 from flaskr.domain.models import Issue, IssueAttachment
 
 class TestIssuePostgresqlRepository(unittest.TestCase):
-    @patch('flaskr.infrastructure.databases.issue_postgresql_repository.create_engine')
-    @patch('flaskr.infrastructure.databases.issue_postgresql_repository.sessionmaker')
+    @patch('flaskr.infrastructure.databases.issue_postresql_repository.create_engine')
+    @patch('flaskr.infrastructure.databases.issue_postresql_repository.sessionmaker')
     def setUp(self, mock_sessionmaker, mock_create_engine):
         mock_create_engine.return_value = MagicMock()
         self.repo = IssuePostgresqlRepository('mock_connection_string')
         self.repo.Session = MagicMock()
 
-    @patch('flaskr.infrastructure.databases.issue_postgresql_repository.create_engine')
-    @patch('flaskr.infrastructure.databases.issue_postgresql_repository.sessionmaker')
+    @patch('flaskr.infrastructure.databases.issue_postresql_repository.create_engine')
+    @patch('flaskr.infrastructure.databases.issue_postresql_repository.sessionmaker')
     def test_list_issues_period(self, mock_sessionmaker, mock_create_engine):
         mock_session = MagicMock()
         mock_sessionmaker.return_value = mock_session
@@ -38,8 +38,8 @@ class TestIssuePostgresqlRepository(unittest.TestCase):
         self.assertEqual(result[0].subject, 'Test Subject')
         mock_session_instance.query.assert_called_once()
 
-    @patch('flaskr.infrastructure.databases.issue_postgresql_repository.create_engine')
-    @patch('flaskr.infrastructure.databases.issue_postgresql_repository.sessionmaker')
+    @patch('flaskr.infrastructure.databases.issue_postresql_repository.create_engine')
+    @patch('flaskr.infrastructure.databases.issue_postresql_repository.sessionmaker')
     def test_list_issues_filtered(self, mock_sessionmaker, mock_create_engine):
         mock_session = MagicMock()
         mock_sessionmaker.return_value = mock_session
@@ -64,8 +64,9 @@ class TestIssuePostgresqlRepository(unittest.TestCase):
         self.assertEqual(result[0]['subject'], 'Filtered Issue')
         mock_session_instance.query.assert_called_once()
 
-    @patch('flaskr.infrastructure.databases.issue_postgresql_repository.create_engine')
-    @patch('flaskr.infrastructure.databases.issue_postgresql_repository.sessionmaker')
+
+    @patch('flaskr.infrastructure.databases.issue_postresql_repository.create_engine')
+    @patch('flaskr.infrastructure.databases.issue_postresql_repository.sessionmaker')
     def test_create_issue(self, mock_sessionmaker, mock_create_engine):
         mock_session = MagicMock()
         mock_sessionmaker.return_value = mock_session
@@ -88,8 +89,8 @@ class TestIssuePostgresqlRepository(unittest.TestCase):
         mock_session_instance.add.assert_called_once()
         mock_session_instance.commit.assert_called()
 
-    @patch('flaskr.infrastructure.databases.issue_postgresql_repository.create_engine')
-    @patch('flaskr.infrastructure.databases.issue_postgresql_repository.sessionmaker')
+    @patch('flaskr.infrastructure.databases.issue_postresql_repository.create_engine')
+    @patch('flaskr.infrastructure.databases.issue_postresql_repository.sessionmaker')
     def test_find(self, mock_sessionmaker, mock_create_engine):
         mock_session = MagicMock()
         mock_sessionmaker.return_value = mock_session
@@ -116,8 +117,8 @@ class TestIssuePostgresqlRepository(unittest.TestCase):
         self.assertEqual(result['data'][0]['subject'], 'Found Issue')
         mock_session_instance.query.assert_called()
 
-    @patch('flaskr.infrastructure.databases.issue_postgresql_repository.create_engine')
-    @patch('flaskr.infrastructure.databases.issue_postgresql_repository.sessionmaker')
+    @patch('flaskr.infrastructure.databases.issue_postresql_repository.create_engine')
+    @patch('flaskr.infrastructure.databases.issue_postresql_repository.sessionmaker')
     def test_list_top_issues_by_user(self, mock_sessionmaker, mock_create_engine):
         mock_session = MagicMock()
         mock_sessionmaker.return_value = mock_session
