@@ -4,13 +4,18 @@ from uuid import uuid4
 from flaskr.infrastructure.databases.issue_postresql_repository import IssuePostgresqlRepository
 from flaskr.domain.models import Issue, IssueAttachment
 
-class IssueMock:
-        def __init__(self, id, subject, description, created_at, closed_at):
-            self.id = id
-            self.subject = subject
-            self.description = description
-            self.created_at = created_at
-            self.closed_at = closed_at
+class IssueModelMock:
+    def __init__(self, id, subject, description, created_at, closed_at):
+        self.id = id
+        self.subject = subject
+        self.description = description
+        self.created_at = created_at
+        self.closed_at = closed_at
+
+class IssueWithStatusMock:
+    def __init__(self, issue_model, status_name):
+        self.IssueModelSqlAlchemy = issue_model
+        self.status_name = status_name
 
 class TestIssuePostgresqlRepository(unittest.TestCase):
     @patch('flaskr.infrastructure.databases.issue_postresql_repository.create_engine')
@@ -68,7 +73,6 @@ class TestIssuePostgresqlRepository(unittest.TestCase):
 
         self.assertGreaterEqual(len(result), 0)   
 
-    @patch('flaskr.infrastructure.databases.issue_postresql_repository.create_engine')
     @patch('flaskr.infrastructure.databases.issue_postresql_repository.sessionmaker')
     def test_get_issue_by_id(self, mock_sessionmaker):
         mock_session = MagicMock()
@@ -76,7 +80,7 @@ class TestIssuePostgresqlRepository(unittest.TestCase):
         mock_session_instance = mock_session.return_value
 
         issue_id = uuid4()
-        mock_issue = IssueMock(
+        mock_issue_model = IssueModelMock(
             id=issue_id,
             subject="Test Issue",
             description="This is a test issue",
@@ -84,11 +88,12 @@ class TestIssuePostgresqlRepository(unittest.TestCase):
             closed_at=None
         )
 
-        mock_issue_data = MagicMock()
-        mock_issue_data.IssueModelSqlAlchemy = mock_issue
-        mock_issue_data.status_name = "IN_PROGRESS"
+        mock_issue_with_status = IssueWithStatusMock(
+            issue_model=mock_issue_model,
+            status_name="IN_PROGRESS"
+        )
 
-        mock_session_instance.query.return_value.join.return_value.filter.return_value.first.return_value = mock_issue_data
+        mock_session_instance.query.return_value.join.return_value.filter.return_value.first.return_value = mock_issue_with_status
 
         result = self.repo.get_issue_by_id(issue_id=str(issue_id))
         
