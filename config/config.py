@@ -17,5 +17,4 @@ class Config:
         self.DATABASE_URI=os.getenv('DATABASE_URI')
         self.AUTH_API_PATH=os.getenv('AUTH_API_PATH')
         self.OPENAI_PREDICTIVE_MODEL=os.getenv('OPENAI_PREDICTIVE_MODEL')
-        self.OPENAI_PREDICTIVE_CONTEXT=os.getenv('OPENAI_PREDICTIVE_CONTEXT')
         

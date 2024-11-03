@@ -21,3 +21,6 @@ class IssueRepository:
     
     def find(self, user_id = None,page=None,limit=None):
         raise NotImplementedError
+    
+    def list_top_issues_by_user(self,user_id) -> List[Issue]:
+        raise NotImplementedError

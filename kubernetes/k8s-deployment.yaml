@@ -51,11 +51,6 @@ spec:
                 configMapKeyRef:
                   name: issues-configmap
                   key: OPENAI_PREDICTIVE_MODEL
-            - name: "OPENAI_PREDICTIVE_CONTEXT"
-              valueFrom:
-                configMapKeyRef:
-                  name: issues-configmap
-                  key: OPENAI_PREDICTIVE_CONTEXT
             - name: "DATABASE_URI"
               valueFrom:
                 secretKeyRef:

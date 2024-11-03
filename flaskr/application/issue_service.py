@@ -10,6 +10,7 @@ from ..utils import Logger
 from  config import Config
 from .auth_service import AuthService
 from .openAiService import OpenAIService
+from .customer_service import CustomerService
 from ..utils import Logger
 log = Logger()
 class Status(TypedDict):
@@ -121,7 +122,46 @@ class IssueService:
         Return:
             answer (str): answer about ask
         """
-        print('entró en el predictive analitic')
-        ia_service=OpenAIService()
-        context=self.config.OPENAI_PREDICTIVE_CONTEXT
-        return ia_service.ask_predictive_ai_chatgpt(context)
+        self.log.info('entró en el predictive analitic')
+        self.log.info('leyendo el promp')
+        promp_to_ask=''
+        with open('openaipromp.txt', 'r', encoding='utf-8') as promp_file:
+            promp_to_ask = promp_file.read()
+
+
+        auth_service=AuthService()
+
+        #1. obtener compañia del usuario
+        customer_user=auth_service.get_customer_by_user_id(user_id)
+        self.log.info(f'obteniendo el customer_user {customer_user}')
+        if customer_user:
+
+            #1. obtener el nombre compañia
+            customer_service=CustomerService()
+            customer=customer_service.get_customer_by_id(customer_user.customer_id)
+            company_name=customer.name
+            promp_to_ask=promp_to_ask.replace('{NOMBRECLIENTE}', customer.name)
+            self.log.info(f'obteniendo el nombre del cliente {customer} {company_name}')
+            #2. obtener el nombre del plan
+            plan=customer_service.get_plan_by_id(customer.plan_id)
+            plan_name=plan.name
+            promp_to_ask=promp_to_ask.replace('{PLAN}', plan_name)
+            self.log.info(f'obteniendo el nombre del plan {plan} {plan_name}')
+            #3. obtener un distinct de los ultimos incidentes reportados por el cliente distintos
+            list_top_issues=self.issue_repository.list_top_issues_by_user(user_id)
+            if list_top_issues:
+                top_issues_descriptions =' - '.join(row[0] for row in list_top_issues)
+                self.log.info(f'top de issues {top_issues_descriptions}')
+                promp_to_ask=promp_to_ask.replace('{INCIDENTES}', top_issues_descriptions)
+
+
+            self.log.info(f'el promp {promp_to_ask}')
+
+
+            if promp_to_ask:
+                ia_service=OpenAIService()
+                return ia_service.ask_predictive_ai_chatgpt(promp_to_ask)
+            else:
+                return 'No se puede dar sugerencias en este momento'
+        else:
+            return 'No se pudo identificar al cliente para dar sugerencias'
