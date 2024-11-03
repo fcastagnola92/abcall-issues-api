@@ -123,13 +123,13 @@ class IssuePostgresqlRepository(IssueRepository):
             if session:
                 session.close()
 
-    def get_issue_by_id(self, user_id: str, issue_id: str) -> Optional[dict]:
+    def get_issue_by_id(self, issue_id: str) -> Optional[dict]:
         session = self.Session()
         try:
             issue = (
                 session.query(IssueModelSqlAlchemy, IssueStateSqlAlchemy.name.label("status_name"))
                 .join(IssueStateSqlAlchemy, IssueModelSqlAlchemy.status == IssueStateSqlAlchemy.id)
-                .filter(IssueModelSqlAlchemy.auth_user_id == user_id, IssueModelSqlAlchemy.id == issue_id)
+                .filter(IssueModelSqlAlchemy.id == issue_id)
                 .first()
             )
 
@@ -147,7 +147,7 @@ class IssuePostgresqlRepository(IssueRepository):
             return issue_data
 
         except Exception as ex:
-            log.error(f"Error retrieving issue by user_id {user_id} and issue_id {issue_id}: {ex}")
+            log.error(f"Error retrieving issue by issue_id {issue_id}: {ex}")
             return None
         finally:
             session.close()
