@@ -59,10 +59,12 @@ class Issue(Resource):
             return self.getIssuesByCustomer()
         elif action == 'getIssuesDasboard':
             return self.getIssuesDasboard()
-        if action == 'getIAResponse':
+        elif action == 'getIAResponse':
             return self.getIAResponse()
-        if action== 'find':
+        elif action== 'find':
             return self.get_issues_by_user()
+        elif action=='getIAPredictiveAnswer':
+            return self.get_ia_predictive_answer()
         if action == 'get_issue_by_id':
             return self.getIssueDetail()
         else:
@@ -174,6 +176,20 @@ class Issue(Resource):
         except Exception as ex:
             log.error(f'Some error occurred trying ask open ai: {ex}')
             return {'message': 'Something was wrong trying ask open ai'}, HTTPStatus.INTERNAL_SERVER_ERROR
+        
+    def get_ia_predictive_answer(self):
+        try:
+
+            log.info(f'Receive request ai predictive')
+            user_id = request.args.get('user_id')
+            answer=self.service.ask_predictive_analitic(user_id)
+            return {
+                'answer': answer
+            }, HTTPStatus.OK
+            
+        except Exception as ex:
+            log.error(f'Some error occurred trying query ai predictive: {ex}')
+            return {'message': 'Something was wrong trying query ai predictive'}, HTTPStatus.INTERNAL_SERVER_ERROR
 
 class Issues(Resource):
     def __init__(self):

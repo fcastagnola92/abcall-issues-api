@@ -185,3 +185,32 @@ class IssuePostgresqlRepository(IssueRepository):
         )
 
         return attachment_entity  
+    
+
+    def list_top_issues_by_user(self,user_id) -> List[Issue]:
+        session = self.Session()
+        try:
+            # issues= (
+            #     session.query(IssueModelSqlAlchemy.description)
+            #     .filter(IssueModelSqlAlchemy.auth_user_id == user_id)
+            #     .distinct(IssueModelSqlAlchemy.description)
+            #     .order_by(IssueModelSqlAlchemy.created_at.desc())
+            #     .limit(10)
+            #     .all()
+            # )
+
+            subquery = (
+                session.query(
+                    IssueModelSqlAlchemy.description,
+                    IssueModelSqlAlchemy.created_at
+                )
+                .filter(IssueModelSqlAlchemy.auth_user_id == user_id)
+                .order_by(IssueModelSqlAlchemy.created_at.desc())
+                .limit(10)
+                .subquery()
+            )
+
+            issues = session.query(func.distinct(subquery.c.description)).all()
+            return issues
+        finally:
+            session.close()
