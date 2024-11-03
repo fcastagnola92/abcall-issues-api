@@ -67,14 +67,16 @@ class TestIssuePostgresqlRepository(unittest.TestCase):
         mock_session_instance = mock_session.return_value
 
         issue_id = uuid4()
-        mock_issue = MagicMock()
-        mock_issue.IssueModelSqlAlchemy = MagicMock()
-        mock_issue.IssueModelSqlAlchemy.id = issue_id
-        mock_issue.IssueModelSqlAlchemy.subject = "Test Issue"
-        mock_issue.IssueModelSqlAlchemy.description = "This is a test issue"
-        mock_issue.IssueModelSqlAlchemy.created_at = "2023-04-01"
-        mock_issue.IssueModelSqlAlchemy.closed_at = None
-        mock_issue.status_name = "IN_PROGRESS"
+        mock_issue = {
+            "IssueModelSqlAlchemy": MagicMock(
+                id=issue_id,
+                subject="Test Issue",
+                description="This is a test issue",
+                created_at="2023-04-01",
+                closed_at=None
+            ),
+            "status_name": "IN_PROGRESS"
+        }
         
         mock_session_instance.query.return_value.join.return_value.filter.return_value.first.return_value = mock_issue
 
