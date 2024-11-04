@@ -20,6 +20,13 @@ spec:
       containers:
         - name: abcall-issues-api
           image: abcall.azurecr.io/abcall-issues-api:1.0.0
+          resources:
+            requests:
+              memory: "256Mi" # Solicitud de memoria
+              ephemeral-storage: "500Mi" # Solicitud de almacenamiento efímero
+            limits:
+              memory: "512Mi" # Límite máximo de memoria
+              ephemeral-storage: "1Gi" # Límite máximo de almacenamiento efímero
           env:
             - name: "FLASK_APP"
               valueFrom:
