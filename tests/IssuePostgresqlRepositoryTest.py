@@ -60,6 +60,7 @@ class TestIssuePostgresqlRepository(unittest.TestCase):
 
         self.assertGreaterEqual(len(result), 0)   
 
+    @patch('flaskr.infrastructure.databases.issue_postresql_repository.create_engine')
     @patch('flaskr.infrastructure.databases.issue_postresql_repository.sessionmaker')
     def test_get_issue_by_id(self, mock_sessionmaker):
         mock_session = MagicMock()
@@ -69,13 +70,10 @@ class TestIssuePostgresqlRepository(unittest.TestCase):
         issue_id = uuid4()
         mock_issue = Issue(
             id=issue_id,
-            auth_user_id=uuid4(),
-            auth_user_agent_id=uuid4(),
             status="IN_PROGRESS",
             subject="Test Issue",
             description="This is a test issue",
             created_at="2023-04-01",
-            closed_at=None,
             channel_plan_id=uuid4()
         )
 
