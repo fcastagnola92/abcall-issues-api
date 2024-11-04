@@ -4,19 +4,6 @@ from uuid import uuid4
 from flaskr.infrastructure.databases.issue_postresql_repository import IssuePostgresqlRepository
 from flaskr.domain.models import Issue, IssueAttachment
 
-class IssueModelMock:
-    def __init__(self, id, subject, description, created_at, closed_at):
-        self.id = id
-        self.subject = subject
-        self.description = description
-        self.created_at = created_at
-        self.closed_at = closed_at
-
-class IssueWithStatusMock:
-    def __init__(self, issue_model, status_name):
-        self.IssueModelSqlAlchemy = issue_model
-        self.status_name = status_name
-
 class TestIssuePostgresqlRepository(unittest.TestCase):
     @patch('flaskr.infrastructure.databases.issue_postresql_repository.create_engine')
     @patch('flaskr.infrastructure.databases.issue_postresql_repository.sessionmaker')
@@ -80,20 +67,19 @@ class TestIssuePostgresqlRepository(unittest.TestCase):
         mock_session_instance = mock_session.return_value
 
         issue_id = uuid4()
-        mock_issue_model = IssueModelMock(
+        mock_issue = Issue(
             id=issue_id,
+            auth_user_id=uuid4(),
+            auth_user_agent_id=uuid4(),
+            status="IN_PROGRESS",
             subject="Test Issue",
             description="This is a test issue",
             created_at="2023-04-01",
-            closed_at=None
+            closed_at=None,
+            channel_plan_id=uuid4()
         )
 
-        mock_issue_with_status = IssueWithStatusMock(
-            issue_model=mock_issue_model,
-            status_name="IN_PROGRESS"
-        )
-
-        mock_session_instance.query.return_value.join.return_value.filter.return_value.first.return_value = mock_issue_with_status
+        mock_session_instance.query.return_value.join.return_value.filter.return_value.first.return_value = mock_issue
 
         result = self.repo.get_issue_by_id(issue_id=str(issue_id))
         
