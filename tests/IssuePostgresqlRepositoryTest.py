@@ -69,11 +69,14 @@ class TestIssuePostgresqlRepository(unittest.TestCase):
 
         issue_id = uuid4()
         mock_issue = Issue(
-            id=issue_id,
-            status="IN_PROGRESS",
-            subject="Test Issue",
-            description="This is a test issue",
-            created_at="2023-04-01",
+            id=uuid4(),
+            auth_user_id=uuid4(),
+            auth_user_agent_id=uuid4(),
+            status='SOLVED',
+            subject='Test Subject',
+            description='Test Description',
+            created_at='2023-01-01',
+            closed_at='2023-01-02',
             channel_plan_id=uuid4()
         )
 
