@@ -68,8 +68,8 @@ class TestIssuePostgresqlRepository(unittest.TestCase):
         mock_session_instance = mock_session.return_value
 
         issue_id = uuid4()
-        mock_issue = Issue(
-            id=uuid4(),
+        mock_issue = Issue(            
+            id=issue_id,
             auth_user_id=uuid4(),
             auth_user_agent_id=uuid4(),
             status='SOLVED',
@@ -86,5 +86,5 @@ class TestIssuePostgresqlRepository(unittest.TestCase):
 
         self.assertIsNotNone(result, "El resultado no debería ser None")
         self.assertEqual(result["id"], str(issue_id))
-        self.assertEqual(result["subject"], "Test Issue")
-        self.assertEqual(result["status"], "IN_PROGRESS")
+        self.assertEqual(result["subject"], "Test Subject")
+        self.assertEqual(result["status"], "SOLVED")
