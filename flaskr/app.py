@@ -30,7 +30,3 @@ api = Api(app)
 api.add_resource(HealthCheck, '/health')
 api.add_resource(Issue, '/issue/<string:action>')
 api.add_resource(Issues, '/issues/<string:action>/<string:user_id>')
-
-api.add_resource(HealthCheck, '/health')
-api.add_resource(Issue, '/issue/<string:action>')
-api.add_resource(Issues, '/issues/<string:action>/<string:user_id>')
