@@ -12,3 +12,10 @@ class IssueAttachment:
             'issue_id': str(self.issue_id),
             'file_path': str(self.file_path),
         }
+
+    def to_dict2(self):
+        return {
+            'id': str(self.id),
+            'issue_id': str(self.issue_id),
+            'file_path': str(self.file_path),
+        }

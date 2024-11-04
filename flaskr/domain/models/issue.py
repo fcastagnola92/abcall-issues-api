@@ -41,3 +41,16 @@ class Issue:
             'closed_at': self.closed_at.isoformat() if self.closed_at else None,
             'channel_plan_id': str(self.channel_plan_id)
         }
+
+    def to_dict2(self):
+        return {
+            'id': str(self.id),
+            'auth_user_id': str(self.auth_user_id),
+            'auth_user_agent_id': str(self.auth_user_agent_id),
+            'status': str(self.status),
+            'subject': str(self.subject),
+            'description': str(self.description),
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'closed_at': self.closed_at.isoformat() if self.closed_at else None,
+            'channel_plan_id': str(self.channel_plan_id)
+        }

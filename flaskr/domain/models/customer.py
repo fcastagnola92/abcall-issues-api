@@ -23,3 +23,11 @@ class Customer:
             'plan_id': str(self.plan_id),
             'date_suscription': self.date_suscription.isoformat() if self.date_suscription else None
         }
+
+    def to_dict2(self):
+        return {
+            'id': str(self.id),
+            'name': str(self.name),
+            'plan_id': str(self.plan_id),
+            'date_suscription': self.date_suscription.isoformat() if self.date_suscription else None
+        }
