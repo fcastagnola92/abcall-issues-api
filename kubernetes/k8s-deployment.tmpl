@@ -19,15 +19,14 @@ spec:
     spec:
       containers:
         - name: abcall-issues-api
-          image: abcall.azurecr.io/abcall-issues-api:{{IMAGE_TAG}}
+          image: abcall.azurecr.io/abcall-issues-api:1.0.0
           resources:
             requests:
-              memory: "256Mi"  # Cantidad de memoria solicitada
+              memory: "256Mi"  # Solicitud de memoria
+              ephemeral-storage: "500Mi"  # Solicitud de almacenamiento efímero
             limits:
               memory: "512Mi"  # Límite máximo de memoria
-          volumeMounts:
-            - mountPath: /path/to/mount  # Ruta donde se montará el volumen en el contenedor
-              name: abcall-storage
+              ephemeral-storage: "1Gi"  # Límite máximo de almacenamiento efímero
           env:
             - name: "FLASK_APP"
               valueFrom:
@@ -77,32 +76,16 @@ spec:
           ports:
             - containerPort: 3007
           imagePullPolicy: Always
-      volumes:
-        - name: abcall-storage
-          persistentVolumeClaim:
-            claimName: abcall-issues-api-pvc  # Referencia al PVC que vamos a crear
-
 ---
 apiVersion: v1
-kind: PersistentVolume
+kind: Service
 metadata:
-  name: abcall-issues-api-pv
+  name: abcall-issues-api-service
 spec:
-  capacity:
-    storage: 1Gi  # Límite de almacenamiento
-  accessModes:
-    - ReadWriteMany
-  hostPath:  # Ajusta según tu entorno
-    path: /mnt/data  # Ruta del nodo donde se almacenará
-
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: abcall-issues-api-pvc
-spec:
-  accessModes:
-    - ReadWriteMany
-  resources:
-    requests:
-      storage: 1Gi  # Requerimiento de almacenamiento
+  type: LoadBalancer
+  selector:
+    app: abcall-issues-api
+  ports:
+    - protocol: TCP
+      port: 3007
+      targetPort: 3007
