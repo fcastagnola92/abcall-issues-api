@@ -86,12 +86,18 @@ class TestIssueService(unittest.TestCase):
 
     
     def test_error_create_issue_with_missed_params(self):
+        issue_service = IssueService()
+        
         with self.assertRaises(ValueError) as context:
-            issue_service = IssueService()
-            self.assertRaises(issue_service.create_issue(auth_user_id=None,auth_user_agent_id=None,subject=None,description=None,file_path=None))
-        error_expected = "All fields are required to create an issue."
+            issue_service.create_issue(
+                auth_user_id=None,
+                auth_user_agent_id=None,
+                subject=None,
+                description=None,
+                file_path=None
+            )
 
-        self.assertEqual(str(context.exception), error_expected)
+        self.assertEqual(str(context.exception), "All fields are required to create an issue.")
 
     @patch('flaskr.application.issue_service.IssueStatus')
     @patch('uuid.uuid4', return_value="e3a54f43-3e8d-4c16-b340-9aba07dfb1ec")
@@ -140,12 +146,17 @@ class TestIssueService(unittest.TestCase):
         self.assertEqual(issue.id, issue_mock.id)
 
     def test_error_in_issue_finder_without_a_user(self):
+        issue_service = IssueService()
+        
+        # Capturamos la excepción esperada
         with self.assertRaises(ValueError) as context:
-            issue_service = IssueService()
-            self.assertRaises(issue_service.find_issues(user_id=None, page=1, limit=10))
-        error_expected = "All fields are required to create an issue."
+            # Llamamos al método directamente, sin usar assertRaises en esta línea
+            issue_service.find_issues(user_id=None, page=1, limit=10)
 
+        # Verificamos el mensaje de la excepción
+        error_expected = "All fields are required to create an issue."
         self.assertEqual(str(context.exception), error_expected)
+
 
     def test_should_get_issues_by_user(self):
         issues_mocked: list[Issue] = []
